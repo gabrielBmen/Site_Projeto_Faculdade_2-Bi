@@ -1,0 +1,17 @@
+body {
+    background-color: #f5f5f5;
+    font-family: Arial;
+}
+
+.card {
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
