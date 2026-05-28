@@ -1,5 +1,5 @@
 <?php
-$host = "127.155.0.2";
+$host = "localhost";
 $user = "root";
 $password = "";
 $database = "droz_robotica";

@@ -1,65 +1,164 @@
 <?php
-$tituloPagina = 'Contato';
-$descricaoPagina = 'Entre em contato com a DROZ Robótica para solicitar orçamento e informações.';
-$paginaAtiva = 'contato';
 require_once __DIR__ . '/includes/funcoes.php';
-include __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/config/conexao.php';
+
+$tituloPagina = 'Contato';
+$descricaoPagina = 'Fale com a DROZ Robótica e solicite orçamento para automação industrial e robótica.';
+$paginaAtiva = 'contato';
 
 $mensagemEnviada = false;
+$erro = '';
+
 $nome = '';
 $email = '';
+$telefone = '';
 $mensagem = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim($_POST['nome'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $telefone = trim($_POST['telefone'] ?? '');
     $mensagem = trim($_POST['mensagem'] ?? '');
 
     if ($nome !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) && $mensagem !== '') {
-        $mensagemEnviada = true;
+        // Mantive sua tabela atual. Se quiser salvar a mensagem também, a tabela precisa ter essa coluna.
+        $sql = "INSERT INTO clientes (nome, email, telefone) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($conexao, $sql);
+
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, 'sss', $nome, $email, $telefone);
+
+            if (mysqli_stmt_execute($stmt)) {
+                $mensagemEnviada = true;
+                $nome = '';
+                $email = '';
+                $telefone = '';
+                $mensagem = '';
+            } else {
+                $erro = 'Erro ao salvar no banco de dados.';
+            }
+
+            mysqli_stmt_close($stmt);
+        } else {
+            $erro = 'Erro ao preparar o envio da mensagem.';
+        }
+    } else {
+        $erro = 'Preencha os campos obrigatórios corretamente.';
     }
 }
+
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="py-5">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-5">
-                <h1 class="section-title mb-3">Fale com a DROZ Robótica</h1>
-                <p class="hero-text">Use esta área para formulário de contato e também para demonstrar um fluxo comercial simples no site.</p>
-
-                <div class="glass-card rounded-4 p-4 mt-4">
-                    <p class="mb-2"><i class="bi bi-geo-alt me-2"></i>Campo Mourão - PR</p>
-                    <p class="mb-2"><i class="bi bi-envelope me-2"></i>contato@drozrobotica.com.br</p>
-                    <p class="mb-0"><i class="bi bi-phone me-2"></i>(44) 99999-9999</p>
-                </div>
-            </div>
-
-            <div class="col-lg-7">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
                 <div class="glass-card rounded-4 p-4 p-lg-5">
-                    <?php if ($mensagemEnviada): ?>
-                        <div class="alert alert-success">
-                            Mensagem enviada com sucesso. Em um ambiente real, este formulário poderia ser conectado ao banco de dados ou a um e-mail.
-                        </div>
-                    <?php endif; ?>
+                    <div class="row g-5 align-items-start">
+                        <div class="col-lg-5">
+                            <span class="badge-soft mb-3 d-inline-flex">
+                                <i class="bi bi-chat-dots me-2"></i>Contato direto
+                            </span>
 
-                    <form method="post" class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Nome</label>
-                            <input type="text" name="nome" class="form-control" value="<?= e($nome) ?>" required>
+                            <h1 class="hero-title mb-3" style="font-size: clamp(2rem, 4vw, 3.2rem);">
+                                Fale com a<br>DROZ Robótica
+                            </h1>
+
+                            <p class="section-subtitle mb-4">
+                                Entre em contato conosco para soluções em automação industrial e robótica.
+                            </p>
+
+                            <div class="info-card rounded-4 p-4">
+                                <div class="d-flex align-items-start gap-3 mb-3">
+                                    <div class="icon-circle"><i class="bi bi-geo-alt"></i></div>
+                                    <div>
+                                        <div class="fw-semibold">Campo Mourão - PR</div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-start gap-3 mb-3">
+                                    <div class="icon-circle"><i class="bi bi-envelope"></i></div>
+                                    <div>
+                                        <a class="text-white text-decoration-none" href="mailto:contato@drozrobotica.com.br">
+                                            contato@drozrobotica.com.br
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="icon-circle"><i class="bi bi-telephone"></i></div>
+                                    <div>
+                                        <a class="text-white text-decoration-none" href="tel:+5544999999999">
+                                            (44) 99999-9999
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">E-mail</label>
-                            <input type="email" name="email" class="form-control" value="<?= e($email) ?>" required>
+
+                        <div class="col-lg-7">
+                            <?php if ($mensagemEnviada): ?>
+                                <div class="alert alert-success rounded-4 border-0">
+                                    Mensagem enviada com sucesso!
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($erro): ?>
+                                <div class="alert alert-danger rounded-4 border-0">
+                                    <?= e($erro) ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <form method="POST" class="contact-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome</label>
+                                    <input
+                                        type="text"
+                                        name="nome"
+                                        class="form-control"
+                                        value="<?= e($nome) ?>"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">E-mail</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        class="form-control"
+                                        value="<?= e($email) ?>"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone</label>
+                                    <input
+                                        type="text"
+                                        name="telefone"
+                                        class="form-control"
+                                        value="<?= e($telefone) ?>"
+                                    >
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Mensagem</label>
+                                    <textarea
+                                        name="mensagem"
+                                        class="form-control"
+                                        rows="6"
+                                        required
+                                    ><?= e($mensagem) ?></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg px-4">
+                                    Enviar Mensagem
+                                </button>
+                            </form>
                         </div>
-                        <div class="col-12">
-                            <label class="form-label">Mensagem</label>
-                            <textarea name="mensagem" class="form-control" rows="5" required><?= e($mensagem) ?></textarea>
-                        </div>
-                        <div class="col-12 d-grid d-md-flex justify-content-md-end">
-                            <button class="btn btn-primary px-4">Enviar</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
