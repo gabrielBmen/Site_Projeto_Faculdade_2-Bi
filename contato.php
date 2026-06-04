@@ -20,31 +20,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefone = trim($_POST['telefone'] ?? '');
     $mensagem = trim($_POST['mensagem'] ?? '');
 
-    if ($nome !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) && $mensagem !== '') {
-        // Mantive sua tabela atual. Se quiser salvar a mensagem também, a tabela precisa ter essa coluna.
-        $sql = "INSERT INTO clientes (nome, email, telefone) VALUES (?, ?, ?)";
-        $stmt = mysqli_prepare($conexao, $sql);
+    try {
+    $sql = "INSERT INTO clientes
+        (nome, email, telefone, mensagem)
+        VALUES
+        (:nome, :email, :telefone, :mensagem)";
 
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'sss', $nome, $email, $telefone);
+$resultado = $pdo->prepare($sql);
 
-            if (mysqli_stmt_execute($stmt)) {
-                $mensagemEnviada = true;
-                $nome = '';
-                $email = '';
-                $telefone = '';
-                $mensagem = '';
-            } else {
-                $erro = 'Erro ao salvar no banco de dados.';
-            }
+$resultado->execute([
+    ':nome' => $nome,
+    ':email' => $email,
+    ':telefone' => $telefone,
+    ':mensagem' => $mensagem
+]);
 
-            mysqli_stmt_close($stmt);
-        } else {
-            $erro = 'Erro ao preparar o envio da mensagem.';
-        }
+    if ($resultado) {
+        $mensagemEnviada = true;
+
+        $nome = '';
+        $email = '';
+        $telefone = '';
+        $mensagem = '';
     } else {
-        $erro = 'Preencha os campos obrigatórios corretamente.';
+        $erro = 'Erro ao salvar no banco de dados.';
     }
+
+} catch (PDOException $e) {
+    $erro = 'Erro no banco de dados: ' . $e->getMessage();
+}
+
 }
 
 include __DIR__ . '/includes/header.php';

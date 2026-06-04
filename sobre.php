@@ -36,7 +36,7 @@ include __DIR__ . '/includes/header.php';
                         <div class="col-12">
                             <div class="info-card rounded-4 p-4">
                                 <h5 class="fw-bold">Missão do site</h5>
-                                <p class="text-white-50 mb-0">Apresentar a empresa, mostrar portfólio e gerar oportunidades comerciais com uma navegação clara e responsiva.</p>
+                                <p class="text-white-50 mb-0">Apresentar a empresa, mostrar portfólio e gerar oportunidades comerciais.</p>
                             </div>
                         </div>
                     </div>

@@ -10,7 +10,8 @@ CREATE TABLE clientes (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(120),
     email VARCHAR(120),
-    telefone VARCHAR(30)
+    telefone VARCHAR(30),
+    mensagem TEXT
 );
 
 CREATE TABLE categorias (
