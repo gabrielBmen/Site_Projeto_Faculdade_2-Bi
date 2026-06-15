@@ -20,36 +20,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefone = trim($_POST['telefone'] ?? '');
     $mensagem = trim($_POST['mensagem'] ?? '');
 
-    try {
-    $sql = "INSERT INTO clientes
-        (nome, email, telefone, mensagem)
-        VALUES
-        (:nome, :email, :telefone, :mensagem)";
+    if ($nome !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) && $mensagem !== '') {
+        try {
+            // CORREÇÃO: Adicionado o campo 'mensagem' e o placeholder ':mensagem' na consulta SQL
+            $sql = "INSERT INTO clientes (nome, email, telefone, mensagem) VALUES (:nome, :email, :telefone, :mensagem)";
+            $stmt = $pdo->prepare($sql);
 
-$resultado = $pdo->prepare($sql);
+            if ($stmt) {
+                // CORREÇÃO: Vinculado o valor da variável $mensagem ao placeholder ':mensagem'
+                $executou = $stmt->execute([
+                    ':nome'     => $nome,
+                    ':email'    => $email,
+                    ':telefone' => $telefone,
+                    ':mensagem' => $mensagem 
+                ]);
 
-$resultado->execute([
-    ':nome' => $nome,
-    ':email' => $email,
-    ':telefone' => $telefone,
-    ':mensagem' => $mensagem
-]);
-
-    if ($resultado) {
-        $mensagemEnviada = true;
-
-        $nome = '';
-        $email = '';
-        $telefone = '';
-        $mensagem = '';
+                if ($executou) {
+                    $mensagemEnviada = true;
+                    $nome = '';
+                    $email = '';
+                    $telefone = '';
+                    $mensagem = '';
+                } else {
+                    $erro = 'Erro ao salvar no banco de dados.';
+                }
+            } else {
+                $erro = 'Erro ao preparar o envio da mensagem.';
+            }
+        } catch (PDOException $e) {
+            $erro = 'Erro no processamento do banco: ' . $e->getMessage();
+        }
     } else {
-        $erro = 'Erro ao salvar no banco de dados.';
+        $erro = 'Preencha os campos obrigatórios corretamente.';
     }
-
-} catch (PDOException $e) {
-    $erro = 'Erro no banco de dados: ' . $e->getMessage();
-}
-
 }
 
 include __DIR__ . '/includes/header.php';
@@ -76,30 +79,28 @@ include __DIR__ . '/includes/header.php';
 
                             <div class="info-card rounded-4 p-4">
                                 <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="icon-circle flex-shrink-0"><i class="bi bi-geo-alt"></i></div>
-                                <div class="fw-semibold mb-0">Campo Mourão - PR</div>
-                                <div>
-        </div>
-    </div>
+                                    <div class="icon-circle flex-shrink-0"><i class="bi bi-geo-alt"></i></div>
+                                    <div class="fw-semibold mb-0">Campo Mourão - PR</div>
+                                </div>
 
-    <div class="d-flex align-items-center gap-3 mb-3">
-        <div class="icon-circle flex-shrink-0"><i class="bi bi-envelope"></i></div>
-        <div>
-            <a class="text-white text-decoration-none mb-0" href="mailto:contato@drozrobotica.com.br">
-                drozrobotica@drozrobotica.com.br
-            </a>
-        </div>
-    </div>
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="icon-circle flex-shrink-0"><i class="bi bi-envelope"></i></div>
+                                    <div>
+                                        <a class="text-white text-decoration-none mb-0" href="mailto:contato@drozrobotica.com.br">
+                                            drozrobotica@drozrobotica.com.br
+                                        </a>
+                                    </div>
+                                </div>
 
-    <div class="d-flex align-items-center gap-3">
-        <div class="icon-circle flex-shrink-0"><i class="bi bi-telephone"></i></div>
-        <div>
-            <a class="text-white text-decoration-none mb-0" href="tel:+5544999450050">
-                +55 (44) 99945-0050
-            </a>
-        </div>
-    </div>
-</div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="icon-circle flex-shrink-0"><i class="bi bi-telephone"></i></div>
+                                    <div>
+                                        <a class="text-white text-decoration-none mb-0" href="tel:+5544999450050">
+                                            +55 (44) 99945-0050
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-lg-7">

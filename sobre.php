@@ -15,7 +15,7 @@ include __DIR__ . '/includes/header.php';
                     A DROZ Robótica é uma indústria brasileira especializada na fabricação de células robotizadas de solda e soluções em automação industrial. A empresa é sediada em Campo Mourão, no Paraná, e se apresenta publicamente como fabricante de células robotizadas de solda com engenharia própria, foco em produtividade e repetibilidade.
                 </p>
                 <p class="text-white-50">
-                    No material público consultado, a empresa destaca atuação em estruturas industriais robustas, segurança operacional, treinamento técnico e soluções para a indústria metalmecânica.
+                    A empresa destaca atuação em estruturas industriais robustas, segurança operacional, treinamento técnico e soluções para a indústria metalmecânica.
                 </p>
             </div>
             <div class="col-lg-6">
@@ -36,7 +36,7 @@ include __DIR__ . '/includes/header.php';
                         <div class="col-12">
                             <div class="info-card rounded-4 p-4">
                                 <h5 class="fw-bold">Missão do site</h5>
-                                <p class="text-white-50 mb-0">Apresentar a empresa, mostrar portfólio e gerar oportunidades comerciais.</p>
+                                <p class="text-white-50 mb-0">Apresentar a empresa, mostrar portfólio e gerar oportunidades comerciais com uma navegação clara e responsiva.</p>
                             </div>
                         </div>
                     </div>

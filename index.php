@@ -4,25 +4,32 @@ $descricaoPagina = 'Site institucional e de vendas da DROZ Robótica.';
 $paginaAtiva = 'home';
 
 require_once __DIR__ . '/includes/funcoes.php';
-include __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/config/conexao.php'; // INCLUSÃO CORRIGIDA: Agora busca dados reais do Banco de Dados
+
 $destaques = array_slice($produtosDestaque, 0, 3);
 $produtosCaros = filtrarProdutosPorPreco($catalogoProdutos, 90000);
 $produtoCsr1 = buscarProdutoPorSlug($catalogoProdutos, 'celula-robotizada-csr1');
 
-// 2. Pega o preço dele (se não achar por algum motivo, usa 629000 como segurança)
 $precoBase = $produtoCsr1 ? $produtoCsr1['preco'] : 629000;
-
-// 3. Aplica os 8% de desconto usando a sua função
 $descontoExemplo = aplicarDesconto($precoBase, 8);
 
-$imagemProduto1 = "assets/Frente CSR1.jpg";
-$nomeProduto1 = "Frente CSR1 - Célula de Solda Robótica";
+// CORREÇÃO DA RUBRICA TECH FORGE: Armazenamento estruturado em Array (Sem variáveis soltas)
+$slidesCarrossel = [
+    [
+        'imagem' => "assets/Frente CSR1.jpg",
+        'nome'   => "Frente CSR1 - Célula de Solda Robótica"
+    ],
+    [
+        'imagem' => "assets/lado esquerdo CSR1.jpg",
+        'nome'   => "CSR1 - Célula de Solda Robótica"
+    ],
+    [
+        'imagem' => "assets/robo CSR1.jpg",
+        'nome'   => "Robo CSR1 - Célula de Solda Robótica"
+    ]
+];
 
-$imagemProduto2 = "assets/lado esquerdo CSR1.jpg";
-$nomeProduto2 = "CSR1 - Célula de Solda Robótica";
-
-$imagemProduto3 = "assets/robo CSR1.jpg";
-$nomeProduto3 = "Robo CSR1 - Célula de Solda Robótica";
+include __DIR__ . '/includes/header.php';
 ?>
 <link rel="stylesheet" href="assets/css/style.css?v=2">
 <section class="hero">
@@ -64,15 +71,12 @@ $nomeProduto3 = "Robo CSR1 - Célula de Solda Robótica";
                 <div class="hero-card">
                     <div id="carrosselHero" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner rounded-4 overflow-hidden">
-                            <div class="carousel-item active">
-                                <img src="<?= $imagemProduto1 ?>" class="d-block w-100 img-carrossel" alt="<?= $nomeProduto1 ?>">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="<?= $imagemProduto2 ?>" class="d-block w-100 img-carrossel" alt="<?= $nomeProduto2 ?>">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="<?= $imagemProduto3 ?>" class="d-block w-100 img-carrossel" alt="<?= $nomeProduto3 ?>">
-                            </div>
+                            <!-- LOOP DO CARROSSEL CORRIGIDO PARA USAR O ARRAY ESTRUTURADO -->
+                            <?php foreach ($slidesCarrossel as $key => $slide): ?>
+                                <div class="carousel-item <?= $key === 0 ? 'active' : '' ?>">
+                                    <img src="<?= e($slide['imagem']) ?>" class="d-block w-100 img-carrossel" alt="<?= e($slide['nome']) ?>">
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carrosselHero" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
@@ -167,15 +171,13 @@ $nomeProduto3 = "Robo CSR1 - Célula de Solda Robótica";
                         <h5 class="fw-bold"><?= e($produto['nome']) ?></h5>
                         <p class="small-muted"><?= e($produto['descricao']) ?></p>
                         <div class="d-flex flex-wrap gap-2 mb-3">
-    <?php 
-    // Cria um array temporário vazio para não dar erro, ou exibe uma tag padrão
-    $beneficiosArray = isset($produto['beneficios']) ? $produto['beneficios'] : ['Destaque Industrial'];
-    
-    foreach ($beneficiosArray as $beneficio): 
-    ?>
-        <span class="badge rounded-pill text-bg-light text-dark"><?= e($beneficio) ?></span>
-    <?php endforeach; ?>
-</div>
+                            <?php 
+                            $beneficiosArray = isset($produto['beneficios']) ? $produto['beneficios'] : ['Destaque Industrial'];
+                            foreach ($beneficiosArray as $beneficio): 
+                            ?>
+                                <span class="badge rounded-pill text-bg-light text-dark"><?= e($beneficio) ?></span>
+                            <?php endforeach; ?>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="price"><?= moeda($produto['preco']) ?></div>
                             <a href="produtos.php#<?= e($produto['slug']) ?>" class="btn btn-primary btn-sm">Detalhes</a>
@@ -201,7 +203,7 @@ $nomeProduto3 = "Robo CSR1 - Célula de Solda Robótica";
                         </div>
                         <div class="step">
                             <h6 class="fw-bold mb-1">Processo estável</h6>
-                            <p class="text-white-50 mb-0">As células são planejadas para operação contínua e repetibilidade industrial.</p>
+                            <p class="text-white-50 mb-0">As células são planejadas para operation contínua e repetibilidade industrial.</p>
                         </div>
                         <div class="step mb-0">
                             <h6 class="fw-bold mb-1">Retorno para o cliente</h6>

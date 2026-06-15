@@ -2,7 +2,9 @@
 $tituloPagina = 'Produtos';
 $descricaoPagina = 'Catálogo de produtos e soluções da DROZ Robótica.';
 $paginaAtiva = 'produtos';
+
 require_once __DIR__ . '/includes/funcoes.php';
+require_once __DIR__ . '/config/conexao.php'; // INCLUSÃO ADICIONADA: Atendendo à recuperação de dados reais do BD
 include __DIR__ . '/includes/header.php';
 
 $termo = trim($_GET['q'] ?? '');
